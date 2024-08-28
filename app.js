@@ -1,16 +1,18 @@
 const express=require("express");
 const app=express();
 const mongoose=require("mongoose");
-const Listing=require("../WanderLust/models/listing.js");
+// const Listing=require("../WanderLust/models/listing.js");
 const path=require("path");
 const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate");
-const wrapAsync=require("./utils/wrapAsync.js")
+// const wrapAsync=require("./utils/wrapAsync.js")
 const ExpressError=require("./utils/ExpressError.js")
-const{listingSchema,reviewSchema}=require("./schema.js");
-const Review=require("../WanderLust/models/review.js");
+// const{listingSchema,reviewSchema}=require("./schema.js");
+// const Review=require("../WanderLust/models/review.js");
+
 
 const listings=require("./routes/listing.js");
+const reviews=require("./routes/review.js");
 
 async function main(){
     await mongoose.connect("mongodb://127.0.0.1:27017/wanderLust");
@@ -36,44 +38,17 @@ res.send("Im rOOt");
 });
 
 
-//MIDDLEWARE SERVER SIDE VALIDATION FOR REVIEWS
-const validateReviews=(req,res,next)=>{
-    let{error}=reviewSchema.validate(req.body);
-
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,result.error);
-    }else{
-        next();
-    }
-}
-
-
 //use instead of listings routes
 app.use("/listings",listings);
 
 
+app.use("/listings/:id/reviews",reviews);
 
 
 
 
-//REVIEWS
-//POST ROUTE
-app.post("/listings/:id/review",validateReviews,wrapAsync(async(req,res)=>{
-  let listing=await Listing.findById(req.params.id);
-  let newReview=new Review(req.body.review);
 
-  listing.reviews.push(newReview);
 
-  await newReview.save();
-  await listing.save();
-
-//   console.log("new review saved");
-//   res.send("new review saved")
-     
-res.redirect(`/listings/${listing._id}`)
-
-}));
 
 
 
