@@ -1,85 +1,45 @@
 const express=require("express");
 const router=express.Router();
 const wrapAsync=require("../utils/wrapAsync.js");
-const ExpressError=require("../utils/ExpressError.js");
-const{listingSchema}=require("../schema.js");
+
 const Listing=require("../models/listing.js");
+const{isLoggedIn,isOwner,validateListing}=require("../middleware.js");
 
-
-//MIDDLEWARE SERVER SIDE VALIDATION
-const validateListing=(req,res,next)=>{
-    let{error}=listingSchema.validate(req.body);
-
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,result.error);
-    }else{
-        next();
-    }
-}
+const listingController=require("../controller/listing.js");
 
 
 
-
+//need implement router.route here for better code composition ,
+//  but for understannding I am not doing that
 
 
 
 //INDEX ROUTE
-router.get("/",wrapAsync(async (req,res)=>{
-    const allListings =  await Listing.find({});
-    res.render("listings/index.ejs",{allListings});
-  }));
+router.get("/",wrapAsync(listingController.index));
  
  
-   //CREATE ROUTE
- router.get("/new",(req,res)=>{
-    res.render("listings/new.ejs");
-  });
+// NEW FORM ROUTE
+ router.get("/new",isLoggedIn,listingController.newForm);
  
  
   //SHOW ROUTE
-  router.get("/:id",wrapAsync(async (req,res)=>{
-     let {id}=req.params;
-     const listing=await Listing.findById(id).populate("reviews");
-     res.render("listings/show.ejs",{listing});
- 
-  }));
+  router.get("/:id",wrapAsync(listingController.showListing));
  
  
   //CREATE ROUTE
- router.post("/",validateListing ,wrapAsync(async (req,res,next)=>{
-     // let {title,description,image,price,country,locatiion}=req.body;
-        
-         const newListing= new Listing(req.body.listing);
-         await newListing.save();
-         res.redirect("/listings");
-     
- })
- );
+ router.post("/",isLoggedIn,validateListing ,
+    wrapAsync(listingController.createRoutr));
  
  
  //EDIT ROUTE
- router.get("/:id/edit",wrapAsync(async (req,res)=>{
-     let {id}=req.params;
-     const listing=await Listing.findById(id);
-     res.render("listings/edit.ejs",{listing});
- }));
+ router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.editRoute));
  
  
  //UPDATE ROUTE
- router.put("/:id",validateListing, wrapAsync(async(req,res)=>{
-     let {id}=req.params;
-    await Listing.findByIdAndUpdate(id,{...req.body.listing});
-    res.redirect(`/listings/${id}`);
- }));
+ router.put("/:id",isLoggedIn,isOwner,validateListing, wrapAsync(listingController.updateRoute));
  
  //DELETE ROUTE
- router.delete("/:id",wrapAsync(async (req,res)=>{
-     let {id}=req.params;
-     let deleteListing= await Listing.findByIdAndDelete(id);
-     console.log(deleteListing);
-     res.redirect("/listings");
- }));
+ router.delete("/:id",isLoggedIn,isOwner,wrapAsync(listingController.destroyRoute));
 
 
  module.exports=router;
