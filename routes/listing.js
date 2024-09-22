@@ -7,6 +7,10 @@ const{isLoggedIn,isOwner,validateListing}=require("../middleware.js");
 
 const listingController=require("../controller/listing.js");
 
+const multer  = require('multer')
+const {storage}=require("../cloudConfig.js");
+const upload = multer({ storage });
+
 
 
 //need implement router.route here for better code composition ,
@@ -27,7 +31,7 @@ router.get("/",wrapAsync(listingController.index));
  
  
   //CREATE ROUTE
- router.post("/",isLoggedIn,validateListing ,
+ router.post("/",upload.single('listing[image]'),isLoggedIn,validateListing ,
     wrapAsync(listingController.createRoutr));
  
  
