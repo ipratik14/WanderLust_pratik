@@ -31,9 +31,10 @@ router.get("/",wrapAsync(listingController.index));
  
  
   //CREATE ROUTE
- router.post("/",upload.single("listing[image]"),(req,res)=>{
-   res.send(req.file);
- });
+//  router.post("/",upload.single("listing[image]"),(req,res)=>{
+//    res.send(req.file);
+//  });
+router.post("/",upload.single("listing[image]"),validateListing,wrapAsync(listingController.createListing));
  
 //  isLoggedIn,validateListing ,
 //     wrapAsync(listingController.createListing));
