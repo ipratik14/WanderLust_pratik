@@ -9,7 +9,7 @@ const listingController=require("../controller/listing.js");
 
 const multer  = require('multer')
 const {storage}=require("../cloudConfig.js");
-const upload = multer({ storage });
+const upload = multer({ storage }); 
 
 
 
@@ -31,9 +31,13 @@ router.get("/",wrapAsync(listingController.index));
  
  
   //CREATE ROUTE
- router.post("/",upload.single('listing[image]'),isLoggedIn,validateListing ,
-    wrapAsync(listingController.createRoutr));
+ router.post("/",upload.single("listing[image]"),(req,res)=>{
+   res.send(req.file);
+ });
  
+//  isLoggedIn,validateListing ,
+//     wrapAsync(listingController.createListing));
+  
  
  //EDIT ROUTE
  router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.editRoute));
