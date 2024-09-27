@@ -83,7 +83,7 @@ const listingSchema=new Schema({
             enum:["Point"],
             required:true,
         },
-        coordinate:{
+        coordinates:{
             type:[Number],
             required:true
         }
