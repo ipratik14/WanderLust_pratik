@@ -34,18 +34,16 @@ router.get("/",wrapAsync(listingController.index));
 //  router.post("/",upload.single("listing[image]"),(req,res)=>{
 //    res.send(req.file);
 //  });
-router.post("/",upload.single("listing[image]"),validateListing,wrapAsync(listingController.createListing));
+router.post("/",isLoggedIn,upload.single("listing[image]"),validateListing,wrapAsync(listingController.createListing));
  
-//  isLoggedIn,validateListing ,
-//     wrapAsync(listingController.createListing));
-  
+
  
  //EDIT ROUTE
  router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.editRoute));
  
  
  //UPDATE ROUTE
- router.put("/:id",isLoggedIn,isOwner,validateListing, wrapAsync(listingController.updateRoute));
+ router.put("/:id",isLoggedIn,isOwner,upload.single("listing[image]"),validateListing, wrapAsync(listingController.updateRoute));
  
  //DELETE ROUTE
  router.delete("/:id",isLoggedIn,isOwner,wrapAsync(listingController.destroyRoute));
