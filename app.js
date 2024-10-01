@@ -29,7 +29,7 @@ const listingRouter=require("./routes/listing.js");
 const reviewRouter=require("./routes/review.js");
 const userRouter=require("./routes/user.js");
 
-const dbUrl=process.env.ATLASDB_URL;
+const dbUrl="mongodb+srv://pratikchavana1037:nMLGUgJcisxv3cEy@cluster1.3yqyb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1";
 async function main(){
     await mongoose.connect(dbUrl);
     
@@ -59,7 +59,8 @@ const store=MongoStore.create({
     },
     touchAfter:24*3600,
     
-});
+})
+
 
 store.on("error",()=>{
     console.log("ERROR IN MONGO SESSION STORE", err);
@@ -177,7 +178,13 @@ app.use((err,req,res,next)=>{
     res.status(statusCode).render("errors.ejs",{message});
 })
 
-
+app.use((req, res, next) => {
+    console.log("Current User:", req.user); // Log req.user to see if it's defined
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.currUser = req.user || null; // Ensure currUser is defined even if req.user is not
+    next();
+});
 
 
 app.listen(8080,()=>{
