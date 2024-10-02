@@ -29,7 +29,8 @@ const listingRouter=require("./routes/listing.js");
 const reviewRouter=require("./routes/review.js");
 const userRouter=require("./routes/user.js");
 
-const dbUrl="mongodb+srv://pratikchavana1037:nMLGUgJcisxv3cEy@cluster1.3yqyb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1";
+// const dbUrl="mongodb+srv://saurabhchavana1037:abcd@cluster0.gbrz5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const dbUrl=process.env.ATLASDB_URL;
 async function main(){
     await mongoose.connect(dbUrl);
     
@@ -55,7 +56,7 @@ app.use(express.static(path.join(__dirname,"/public")));
 const store=MongoStore.create({
     mongoUrl:dbUrl,
     crypto:{
-        secret:"mysecretcode"
+        secret:process.env.SECRET
     },
     touchAfter:24*3600,
     
@@ -69,7 +70,7 @@ store.on("error",()=>{
 
 const sessionOptions={
     store,
-    secret:"mysecretcode",
+    secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
     cookie:{
